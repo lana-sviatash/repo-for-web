@@ -3,6 +3,7 @@ from collections import UserDict
 import pickle
 from rich.console import Console
 from rich.table import Table
+from helpers import instruction, parser_input, command_handler
 
 
 class Tag:
@@ -241,7 +242,7 @@ def help_menu():
     pass
 
 
-note_commands = {
+NOTE_COMMANDS = {
     "add": [add_note, 'to add note'],
     "delete": [delete_note, 'to delete note'],
     "edit": [change_note, 'to edit note'],
@@ -252,45 +253,15 @@ note_commands = {
 }
 
 
-def pars(txt_comm: str, command_dict):
-    command = None
-    for key in command_dict.keys():
-        if txt_comm.startswith(key):
-            command = key
-    return command
-
-
-def command_handler(user_input, commands):
-    if user_input in commands:
-        return commands[user_input][0]()
-    possible_command = difflib.get_close_matches(user_input, commands, cutoff=0.5)
-    if possible_command:
-        return f'Wrong command. Maybe you mean: {", ".join(possible_command)}'
-    else:
-        return f'Wrong command.'
-
-
-def instruction(command_dict):
-    console = Console()
-    table = Table(show_header=True, header_style="bold magenta", width=60, show_lines=False)
-    table.add_column("Command", max_width=None, no_wrap=False)
-    table.add_column("Description", width=20, no_wrap=False)
-
-    for func_name, func in command_dict.items():
-        table.add_row(str(func_name), str(func[1]))
-
-    console.print(table)
-
-
 def notes_main():
     print("\n\n***Hello I`m a notebook.***\n")
-    instruction(note_commands)
+    instruction(NOTE_COMMANDS)
     nb.load()
     while True:
         user_input_command = str(input("\nInput a command:\n>>>"))
-        command = pars(user_input_command.lower(), note_commands)
+        command = parser_input(user_input_command.lower(), NOTE_COMMANDS)
         if user_input_command == 'help':
-            instruction(note_commands)
+            instruction(NOTE_COMMANDS)
         elif user_input_command in ("exit", "0"):
             nb.save()
             print('Notebook closed')
@@ -298,10 +269,10 @@ def notes_main():
         elif user_input_command == 'show all':
             show_notes()
         else:
-            if command in note_commands:
-                result = command_handler(command, note_commands)
+            if command in NOTE_COMMANDS:
+                result = command_handler(command, NOTE_COMMANDS)
             else:
-                result = command_handler(user_input_command, note_commands)
+                result = command_handler(user_input_command, NOTE_COMMANDS)
             nb.save()
             if result:
                 print(result)

@@ -344,22 +344,6 @@ class AddressBook(UserDict):
                 result.append(f"{key}: {', '.join(value)}")
         return '! Do not forget to congratulate !\n' + '_' * 59 + '\n' + '\n'.join(result) + '\n' + '_' * 59
 
-
-        # for rec in self.data.values():
-        #     if rec.birthday != "":
-        #         new_birthday = rec.birthday.replace(year=current_year)
-        #         birthday_weekday = new_birthday.weekday()
-        #         if self.get_current_week()[0] <= new_birthday < self.get_current_week()[1]:
-        #             if birthday_weekday < 5:
-        #                 congratulate[weekdays[birthday_weekday]].append(
-        #                     rec.name)
-        #             else:
-        #                 congratulate['Monday'].append(rec.name)
-        # for key, value in congratulate.items():
-        #     if len(value):
-        #         result.append(f"{key}: {', '.join(value)}")
-        # return '! Do not forget to congratulate !\n' + '_' * 59 + '\n' + '\n'.join(result) + '\n' + '_' * 59
-
     def show_all_address_book(self):
         console = Console()
         table = Table(show_header=True, header_style="bold magenta",

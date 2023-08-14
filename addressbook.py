@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.table import Table
 from address_book_classes import Record, Name, Phone, Birthday, Email, Address, Note, AddressBook
 from datetime import date, timedelta, datetime
+from helpers import instruction, parser_input, command_handler
 
 address_book = AddressBook()
 filename = 'address_book'
@@ -164,7 +165,7 @@ def help():
     pass
 
 
-command_dict = {
+ADDRESSBOOK_COMMANDS = {
     'add': [add, 'to add contact'],
     'show all': [show_all_address_book, 'to show all contacts'],
     'save': [address_book.save, 'to save address book'],
@@ -181,43 +182,6 @@ command_dict = {
 }
 
 
-@input_errors
-def command_handler(user_input, command_dict):
-    if user_input in command_dict:
-        return command_dict[user_input][0]
-    possible_command = difflib.get_close_matches(
-        user_input.split()[0], command_dict, cutoff=0.55)
-    if possible_command:
-        return f'Wrong command. Maybe you mean: {", ".join(possible_command)}'
-    else:
-        return 'Wrong command.'
-
-
-def instruction(command_dict):
-    console = Console()
-    table = Table(show_header=True, header_style="bold magenta",
-                  width=60, show_lines=False)
-    table.add_column("Command", max_width=None, no_wrap=False)
-    table.add_column("Description", width=20, no_wrap=False)
-
-    for func_name, func in command_dict.items():
-        table.add_row(str(func_name), str(func[1]))
-
-    console.print(table)
-
-
-def parser_input(user_input: str, command_dict):
-    command = None
-    arguments = ''
-
-    for key in command_dict.keys():
-        if user_input.startswith(key):
-            command = key
-            arguments = user_input.replace(key, '').strip().split()
-            break
-    return command, arguments
-
-
 def addressbook_starter():
     filename = "address_book.bin"
     try:
@@ -229,25 +193,26 @@ def addressbook_starter():
     print("\n ***Hello I`m a contact book.***\n")
     print("_" * 59)
     print(address_book.congratulate())
-    instruction(command_dict)
+    instruction(ADDRESSBOOK_COMMANDS)
 
     while True:
         user_input = input('Input a command\n>>>').lower()
+        command = parser_input(user_input.lower(), ADDRESSBOOK_COMMANDS)
         if user_input == 'help':
-            instruction(command_dict)
+            instruction(ADDRESSBOOK_COMMANDS)
         elif user_input in ("exit", "0"):
             print('Contact book closed')
             address_book.save()
             break
         else:
-            command, arguments = parser_input(user_input, command_dict)
-            if command in command_dict:
-                result = command_handler(command, command_dict)(*arguments)
+            if command in ADDRESSBOOK_COMMANDS:
+                result = command_handler(command, ADDRESSBOOK_COMMANDS)
                 address_book.save()
             else:
-                result = command_handler(user_input, command_dict)
+                result = command_handler(user_input, ADDRESSBOOK_COMMANDS)
                 address_book.save()
-            print(result)
+            if result:
+                print(result)
     address_book.save()
 
 
