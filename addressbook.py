@@ -1,6 +1,4 @@
 import functools
-from rich.console import Console
-from rich.table import Table
 from address_book_classes import Record, Name, Phone, Birthday, Email, Address, Note, AddressBook
 from datetime import date, timedelta, datetime
 from helpers import instruction, parser_input, command_handler
