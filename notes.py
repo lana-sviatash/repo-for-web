@@ -1,4 +1,3 @@
-import difflib
 from collections import UserDict
 import pickle
 from rich.console import Console
