@@ -2,7 +2,7 @@ from collections import UserDict
 import pickle
 from rich.console import Console
 from rich.table import Table
-from helpers import instruction, parser_input, command_handler
+from helpers import InstructionOutput, parser_input, command_handler, show_output, OutputAbstract
 
 
 class Tag:
@@ -62,7 +62,7 @@ class Note:
         self.note_text = state
 
 
-class NoteBook(UserDict):
+class NoteBook(UserDict, OutputAbstract):
 
     def add_note(self, note, tags):
         self.data[note] = tags
@@ -81,7 +81,7 @@ class NoteBook(UserDict):
         except (FileNotFoundError, TypeError):
             self.data = {}
 
-    def show_notes(self):
+    def format_output(self):
         n = 1
         console = Console()
         table = Table(show_header=True, header_style="bold magenta", width=60, show_lines=True)
@@ -97,7 +97,7 @@ class NoteBook(UserDict):
 
     def edit_note(self):
         print("\n***Edit func***")
-        self.show_notes()
+        self.format_output()
 
         x = input("\nChoose the note you want to edit by number ('0' - to exit delete func):\n>>> ")
 
@@ -189,7 +189,8 @@ def add_note():
 
 
 def delete_note():
-    nb.show_notes()
+    # nb.show_notes()
+    show_output(nb)
 
     x = input("\n***Delete func***\nChoose the note you want to delete by number ('0' - to exit delete func):\n>>> ")
 
@@ -219,7 +220,8 @@ def exit_notes():
 
 
 def show_notes():
-    return nb.show_notes()
+    # return nb.show_notes()
+    return show_output(nb)
 
 
 def search():
@@ -251,16 +253,18 @@ NOTE_COMMANDS = {
     "0 or exit": [exit_notes, 'to exit']
 }
 
+note_instruction_output = InstructionOutput(NOTE_COMMANDS)
+
 
 def notes_main():
     print("\n\n***Hello I`m a notebook.***\n")
-    instruction(NOTE_COMMANDS)
+    show_output(note_instruction_output)
     nb.load()
     while True:
         user_input_command = str(input("\nInput a command:\n>>>"))
         command = parser_input(user_input_command.lower(), NOTE_COMMANDS)
         if user_input_command == 'help':
-            instruction(NOTE_COMMANDS)
+            show_output(note_instruction_output)
         elif user_input_command in ("exit", "0"):
             nb.save()
             print('Notebook closed')

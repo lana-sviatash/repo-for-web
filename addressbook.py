@@ -1,7 +1,7 @@
 import functools
 from address_book_classes import Record, Name, Phone, Birthday, Email, Address, Note, AddressBook
 from datetime import date, timedelta, datetime
-from helpers import instruction, parser_input, command_handler
+from helpers import InstructionOutput, parser_input, command_handler, show_output
 
 address_book = AddressBook()
 filename = 'address_book'
@@ -111,7 +111,8 @@ def search(*args) -> str:
 
 def show_all_address_book():
     if Record.__name__:
-        return address_book.show_all_address_book()
+        # return address_book.show_all_address_book()
+        return show_output(address_book)
 
 
 @input_errors
@@ -148,8 +149,8 @@ def who_has_bd_n_days():
     if result:
         for item in result:
             result_dict[item.name] = item
-
-        return result_dict.show_all_address_book()
+        # return result_dict.show_all_address_book()
+        return show_output(result_dict)
     else:
         return f"\nNobody has birthday in {days} days\n"
 
@@ -179,6 +180,9 @@ ADDRESSBOOK_COMMANDS = {
 }
 
 
+address_instruction_output = InstructionOutput(ADDRESSBOOK_COMMANDS)
+
+
 def addressbook_starter():
     filename = "address_book.bin"
     try:
@@ -190,13 +194,15 @@ def addressbook_starter():
     print("\n ***Hello I`m a contact book.***\n")
     print("_" * 59)
     print(address_book.congratulate())
-    instruction(ADDRESSBOOK_COMMANDS)
+    # instruction(ADDRESSBOOK_COMMANDS)
+    show_output(address_instruction_output)
 
     while True:
         user_input = input('Input a command\n>>>').lower()
         command = parser_input(user_input.lower(), ADDRESSBOOK_COMMANDS)
         if user_input == 'help':
-            instruction(ADDRESSBOOK_COMMANDS)
+            # instruction(ADDRESSBOOK_COMMANDS)
+            show_output(address_instruction_output)
         elif user_input in ("exit", "0"):
             print('Contact book closed')
             address_book.save()
