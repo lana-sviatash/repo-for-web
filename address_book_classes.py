@@ -312,14 +312,6 @@ class AddressBook(UserDict):
             week_start = now - timedelta(days=current_weekday - 5)
         return [week_start.date(), week_start.date() + timedelta(days=7)]
 
-    def get_current_week(self):
-        now = datetime.now()
-        current_weekday = now.weekday()
-        if current_weekday < 5:
-            week_start = now - timedelta(days=2 + current_weekday)
-        else:
-            week_start = now - timedelta(days=current_weekday - 5)
-        return [week_start.date(), week_start.date() + timedelta(days=7)]
 
     def congratulate(self):
         result = []
