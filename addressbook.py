@@ -1,7 +1,7 @@
 import functools
 from address_book_classes import Record, Name, Phone, Birthday, Email, Address, Note, AddressBook
 from datetime import date, timedelta, datetime
-from helpers import InstructionOutput, parser_input, command_handler, show_output
+from helpers import parser_input, command_handler, InstructionOutput, TerminalOutputFormatter, FileOutputFormatter, CommandHandler
 
 address_book = AddressBook()
 filename = 'address_book'
@@ -111,8 +111,7 @@ def search(*args) -> str:
 
 def show_all_address_book():
     if Record.__name__:
-        # return address_book.show_all_address_book()
-        return show_output(address_book)
+        return address_book.show_all_address_book()
 
 
 @input_errors
@@ -149,8 +148,8 @@ def who_has_bd_n_days():
     if result:
         for item in result:
             result_dict[item.name] = item
-        # return result_dict.show_all_address_book()
-        return show_output(result_dict)
+
+        return result_dict.show_all_address_book()
     else:
         return f"\nNobody has birthday in {days} days\n"
 
@@ -180,10 +179,10 @@ ADDRESSBOOK_COMMANDS = {
 }
 
 
-address_instruction_output = InstructionOutput(ADDRESSBOOK_COMMANDS)
-
-
 def addressbook_starter():
+    terminal_formatter = TerminalOutputFormatter()
+    # file_formatter = FileOutputFormatter("output.txt")
+
     filename = "address_book.bin"
     try:
         address_book.load(filename)
@@ -194,15 +193,21 @@ def addressbook_starter():
     print("\n ***Hello I`m a contact book.***\n")
     print("_" * 59)
     print(address_book.congratulate())
-    # instruction(ADDRESSBOOK_COMMANDS)
-    show_output(address_instruction_output)
+    # instruction(ADDRESSBOOK_COMMANDS) -> the old version
+    result = InstructionOutput(ADDRESSBOOK_COMMANDS).show_help_tips()
+    terminal_output = CommandHandler(result, terminal_formatter)
+    terminal_output.display_output()
 
     while True:
         user_input = input('Input a command\n>>>').lower()
         command = parser_input(user_input.lower(), ADDRESSBOOK_COMMANDS)
         if user_input == 'help':
-            # instruction(ADDRESSBOOK_COMMANDS)
-            show_output(address_instruction_output)
+            # instruction(ADDRESSBOOK_COMMANDS) -> the old version
+            result = InstructionOutput(ADDRESSBOOK_COMMANDS).show_help_tips()
+            terminal_output = CommandHandler(result, terminal_formatter)
+            terminal_output.display_output()
+            # file_output.display_output()
+
         elif user_input in ("exit", "0"):
             print('Contact book closed')
             address_book.save()
@@ -215,10 +220,13 @@ def addressbook_starter():
                 result = command_handler(user_input, ADDRESSBOOK_COMMANDS)
                 address_book.save()
             if result:
-                print(result)
+                # print(result) # -> the old 
+                terminal_output = CommandHandler(result, terminal_formatter)
+                terminal_output.display_output()
+                # file_output = CommandHandler(result, file_formatter)
+                # file_output.display_output()
     address_book.save()
 
 
 if __name__ == "__main__":
     addressbook_starter()
-    

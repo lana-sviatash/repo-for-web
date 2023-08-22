@@ -2,7 +2,7 @@ from collections import UserDict
 import pickle
 from rich.console import Console
 from rich.table import Table
-from helpers import InstructionOutput, parser_input, command_handler, show_output, OutputAbstract
+from helpers import parser_input, command_handler, InstructionOutput, TerminalOutputFormatter, FileOutputFormatter, CommandHandler
 
 
 class Tag:
@@ -62,7 +62,7 @@ class Note:
         self.note_text = state
 
 
-class NoteBook(UserDict, OutputAbstract):
+class NoteBook(UserDict):
 
     def add_note(self, note, tags):
         self.data[note] = tags
@@ -81,7 +81,7 @@ class NoteBook(UserDict, OutputAbstract):
         except (FileNotFoundError, TypeError):
             self.data = {}
 
-    def format_output(self):
+    def show_notes(self):
         n = 1
         console = Console()
         table = Table(show_header=True, header_style="bold magenta", width=60, show_lines=True)
@@ -97,7 +97,7 @@ class NoteBook(UserDict, OutputAbstract):
 
     def edit_note(self):
         print("\n***Edit func***")
-        self.format_output()
+        self.show_notes()
 
         x = input("\nChoose the note you want to edit by number ('0' - to exit delete func):\n>>> ")
 
@@ -189,8 +189,7 @@ def add_note():
 
 
 def delete_note():
-    # nb.show_notes()
-    show_output(nb)
+    nb.show_notes()
 
     x = input("\n***Delete func***\nChoose the note you want to delete by number ('0' - to exit delete func):\n>>> ")
 
@@ -220,8 +219,7 @@ def exit_notes():
 
 
 def show_notes():
-    # return nb.show_notes()
-    return show_output(nb)
+    return nb.show_notes()
 
 
 def search():
@@ -253,18 +251,29 @@ NOTE_COMMANDS = {
     "0 or exit": [exit_notes, 'to exit']
 }
 
-note_instruction_output = InstructionOutput(NOTE_COMMANDS)
-
 
 def notes_main():
+    terminal_formatter = TerminalOutputFormatter()
+    # file_formatter = FileOutputFormatter("output.txt")
+
     print("\n\n***Hello I`m a notebook.***\n")
-    show_output(note_instruction_output)
+    # instruction(NOTE_COMMANDS) -> the old version
+    result = InstructionOutput(NOTE_COMMANDS).show_help_tips()
+    terminal_output = CommandHandler(result, terminal_formatter)
+    terminal_output.display_output()
+
     nb.load()
+
     while True:
         user_input_command = str(input("\nInput a command:\n>>>"))
         command = parser_input(user_input_command.lower(), NOTE_COMMANDS)
         if user_input_command == 'help':
-            show_output(note_instruction_output)
+            # instruction(NOTE_COMMANDS) -> the old version
+            result = InstructionOutput(NOTE_COMMANDS).show_help_tips()
+            terminal_output = CommandHandler(result, terminal_formatter)
+            terminal_output.display_output()
+            # file_output.display_output()
+
         elif user_input_command in ("exit", "0"):
             nb.save()
             print('Notebook closed')
@@ -278,7 +287,11 @@ def notes_main():
                 result = command_handler(user_input_command, NOTE_COMMANDS)
             nb.save()
             if result:
-                print(result)
+                # print(result) # -> the old version
+                terminal_output = CommandHandler(result, terminal_formatter)
+                terminal_output.display_output()
+                # file_output = CommandHandler(result, file_formatter)
+                # file_output.display_output()
 
 
 if __name__ == "__main__":
