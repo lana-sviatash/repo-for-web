@@ -6,7 +6,6 @@ import pickle
 import re
 from rich.console import Console
 from rich.table import Table
-from helpers import OutputAbstract
 
 
 class Field:
@@ -237,7 +236,7 @@ class Record:
         return f"{phone} not present in phones of contact {self.name}"
 
 
-class AddressBook(UserDict, OutputAbstract):
+class AddressBook(UserDict):
 
     def add_record(self, record: Record):
         self.data[str(record.name)] = record
@@ -345,7 +344,7 @@ class AddressBook(UserDict, OutputAbstract):
                 result.append(f"{key}: {', '.join(value)}")
         return '! Do not forget to congratulate !\n' + '_' * 59 + '\n' + '\n'.join(result) + '\n' + '_' * 59
 
-    def format_output(self):
+    def show_all_address_book(self):
         console = Console()
         table = Table(show_header=True, header_style="bold magenta",
                       width=120, show_lines=True)
@@ -397,4 +396,5 @@ class AddressBook(UserDict, OutputAbstract):
                 output.append(rec)
             for item in output:
                 result_dict[item.name] = item
-        return result_dict.format_output()
+        return result_dict.show_all_address_book()
+    
