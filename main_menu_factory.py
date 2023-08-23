@@ -6,6 +6,7 @@ from sort import sorter_starter
 from addressbook import addressbook_starter
 from notes import notes_main as notes_starter
 
+
 class ApplicationModuleFactory(ABC):
     @abstractmethod
     def create_module(self):
@@ -14,35 +15,43 @@ class ApplicationModuleFactory(ABC):
 
 class AddressBookFactory(ApplicationModuleFactory):
     def create_module(self):
-        #return create_addressbook()
+        # return create_addressbook()
         return addressbook_starter()
 
 
 class NotesFactory(ApplicationModuleFactory):
     def create_module(self):
-        #return create_notes()
+        # return create_notes()
         return notes_starter()
+
 
 class SorterFactory(ApplicationModuleFactory):
     def create_module(self):
-        #return create_sorter()
+        # return create_sorter()
         return sorter_starter()
+
 
 class Exit(ApplicationModuleFactory):
     def create_module(self):
         return
-        
+
+
 def menu():
     factories = {
-        '1  - AddressBook📒': AddressBookFactory(),
-        '2  - NoteBook📋': NotesFactory(),
-        '3  - Files sorter📂': SorterFactory(),
-        '0  - Exit❌': Exit()
+        '1': AddressBookFactory(),
+        '2': NotesFactory(),
+        '3': SorterFactory(),
+        '0': Exit()
     }
+    logo_menu = [
+        '1  - AddressBook📒',
+        '2  - NoteBook📋',
+        '3  - Files sorter📂',
+        '0  - Exit❌']
     print("_"*34)
     print("| {:<3} {:^27}|".format("☰", "Welcome to main menu"))
     print('|'+'_'*32 + '|')
-    for el in factories:
+    for el in logo_menu:
         print('|{:<31}|'.format(el))
         print('|'+'_'*32 + '|')
     print('|{:<32}|'.format('Type number to start:  '))
@@ -59,20 +68,15 @@ def menu():
             print("|{:^30}|".format(f"✨ {module.name} Started! ✨"))
             print("|" + "_" * 32 + "|")
             module.start()
-        
+
         else:
-            print ('\nGoodbye!\n')
+            print('\nGoodbye!\n')
             break
-
-
-        
 
             # You can also print the result of the module if it returns one.
             # result = module.start()
             # print(result)
 
         # ... existing code ...
-
-
 if __name__ == '__main__':
     menu()
