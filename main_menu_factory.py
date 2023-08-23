@@ -60,9 +60,9 @@ def menu():
         if user_input in factories:
             factory = factories[user_input]
             module = factory.create_module()
-            print("_" * 34)
-            print("|{:^30}|".format(f"✨ {module.name} Started! ✨"))
-            print("|" + "_" * 32 + "|")
+            # print("_" * 34)
+            # print("|{:^30}|".format(f"✨ {module.name} Started! ✨"))
+            # print("|" + "_" * 32 + "|")
             module.start()
 
         elif user_input == '0' or user_input.lower() == "exit":

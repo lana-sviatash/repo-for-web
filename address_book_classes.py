@@ -6,18 +6,22 @@ import pickle
 import re
 from rich.console import Console
 from rich.table import Table
+from abc import ABC, abstractmethod
 
 
-class Field:
+class Field(ABC):
+    @abstractmethod
+    def __getitem__(self):
+        pass
 
-    def __init__(self, value) -> None:
-        self.value = value
+    # def __init__(self, value) -> None:
+    #     self.value = value
 
-    def __str__(self) -> str:
-        return self.value
+    # def __str__(self) -> str:
+    #     return self.value
 
-    def __repr__(self) -> str:
-        return str(self)
+    # def __repr__(self) -> str:
+    #     return str(self)
 
 
 class Name(Field):
@@ -29,6 +33,9 @@ class Name(Field):
                 print("\nName must contain only alphabetical characters!")
                 return ValueError
             self.value = value
+
+    def __getitem__(self):
+        return self.value
 
 
 class Phone(Field):
@@ -109,7 +116,7 @@ class Email(Field):
                 self.value = input("Email: ")
             try:
                 if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$",
-                        self.value) or self.value == '':
+                            self.value) or self.value == '':
                     break
                 else:
                     raise ValueError
@@ -130,17 +137,26 @@ class Email(Field):
     def __str__(self):
         return self.__value
 
+    def __getitem__(self):
+        return self.value
+
 
 class Address(Field):
     def __init__(self, value):
         self.__value = None
         self.value = value
 
+    def __getitem__(self):
+        return self.value
+
 
 class Note(Field):
     def __init__(self, value):
         self.__value = None
         self.value = value
+
+    def __getitem__(self):
+        return self.value
 
 
 class Record:
@@ -312,7 +328,6 @@ class AddressBook(UserDict):
             week_start = now - timedelta(days=current_weekday - 5)
         return [week_start.date(), week_start.date() + timedelta(days=7)]
 
-
     def congratulate(self):
         result = []
         WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday',
@@ -320,15 +335,17 @@ class AddressBook(UserDict):
         current_year = datetime.now().year
         congratulate = {'Monday': [], 'Tuesday': [],
                         'Wednesday': [], 'Thursday': [], 'Friday': []}
-        
+
         for account in self.keys():
             if self[account].birthday:
-                new_birthday = self[account].birthday.replace(year=current_year)
+                new_birthday = self[account].birthday.replace(
+                    year=current_year)
                 birthday_weekday = new_birthday.weekday()
                 next_week = (datetime.now() + timedelta(days=7)).date()
                 if date.today() < new_birthday < next_week:
                     if birthday_weekday < 5:
-                        congratulate[WEEKDAYS[birthday_weekday]].append(self[account].name)
+                        congratulate[WEEKDAYS[birthday_weekday]].append(
+                            self[account].name)
                     else:
                         congratulate["Monday"].append(self[account].name)
         for key, value in congratulate.items():
