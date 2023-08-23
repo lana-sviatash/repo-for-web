@@ -12,25 +12,28 @@ class ApplicationModuleFactory(ABC):
 
 class AddressBookFactory(ApplicationModuleFactory):
     def create_module(self):
+        addressbook_starter()
         # return create_addressbook()
-        return addressbook_starter()
+        return menu()
 
 
 class NotesFactory(ApplicationModuleFactory):
     def create_module(self):
+        notes_starter()
         # return create_notes()
-        return notes_starter()
+        return menu()
 
 
 class SorterFactory(ApplicationModuleFactory):
     def create_module(self):
+        sorter_starter()
         # return create_sorter()
-        return sorter_starter()
+        return menu()
 
 
-class Exit(ApplicationModuleFactory):
-    def create_module(self):
-        return
+# class Exit(ApplicationModuleFactory):
+#     def create_module(self):
+#         return
 
 
 def menu():
