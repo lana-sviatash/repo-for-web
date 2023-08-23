@@ -1,7 +1,4 @@
 from abc import ABC, abstractmethod
-# from addressbook import create_addressbook
-# from notes import create_notes
-# from sort import create_sorter
 from sort import sorter_starter
 from addressbook import addressbook_starter
 from notes import notes_main as notes_starter
@@ -41,25 +38,24 @@ def menu():
         '1': AddressBookFactory(),
         '2': NotesFactory(),
         '3': SorterFactory(),
-        '0': Exit()
     }
     logo_menu = [
         '1  - AddressBook📒',
         '2  - NoteBook📋',
         '3  - Files sorter📂',
-        '0  - Exit❌']
-    print("_"*34)
-    print("| {:<3} {:^27}|".format("☰", "Welcome to main menu"))
-    print('|'+'_'*32 + '|')
-    for el in logo_menu:
-        print('|{:<31}|'.format(el))
-        print('|'+'_'*32 + '|')
-    print('|{:<32}|'.format('Type number to start:  '))
+        '0  - Exit❌'
+    ]
 
     while True:
-        # ... existing menu code ...
-
+        print("_"*34)
+        print("| {:<3} {:^27}|".format("☰", "Welcome to main menu"))
+        print('|'+'_'*32 + '|')
+        for el in logo_menu:
+            print('|{:<31}|'.format(el))
+        print('|'+'_'*32 + '|')
+        print('|{:<32}|'.format('Type number to start:  '))
         user_input = input("|>>> ")
+        print('|'+'_'*32 + '|')
 
         if user_input in factories:
             factory = factories[user_input]
@@ -69,14 +65,14 @@ def menu():
             print("|" + "_" * 32 + "|")
             module.start()
 
-        else:
+        elif user_input == '0' or user_input.lower() == "exit":
             print('\nGoodbye!\n')
             break
+        else:
+            print("_"*34)
+            print("|{:^32}|".format("Wrong number... Try again..."))
+            print("|"+"_"*32 + "|")
 
-            # You can also print the result of the module if it returns one.
-            # result = module.start()
-            # print(result)
 
-        # ... existing code ...
 if __name__ == '__main__':
     menu()
