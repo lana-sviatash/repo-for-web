@@ -28,16 +28,24 @@ class SorterFactory(ApplicationModuleFactory):
         #return create_sorter()
         return sorter_starter()
 
-class MainMenu(ApplicationModuleFactory):
+class Exit(ApplicationModuleFactory):
     def create_module(self):
-        return menu()
+        return
+        
 def menu():
     factories = {
-        '1': AddressBookFactory(),
-        '2': NotesFactory(),
-        '3': SorterFactory(),
-        '0': MainMenu()
+        '1  - AddressBook📒': AddressBookFactory(),
+        '2  - NoteBook📋': NotesFactory(),
+        '3  - Files sorter📂': SorterFactory(),
+        '0  - Exit❌': Exit()
     }
+    print("_"*34)
+    print("| {:<3} {:^27}|".format("☰", "Welcome to main menu"))
+    print('|'+'_'*32 + '|')
+    for el in factories:
+        print('|{:<31}|'.format(el))
+        print('|'+'_'*32 + '|')
+    print('|{:<32}|'.format('Type number to start:  '))
 
     while True:
         # ... existing menu code ...
@@ -47,12 +55,17 @@ def menu():
         if user_input in factories:
             factory = factories[user_input]
             module = factory.create_module()
-
             print("_" * 34)
             print("|{:^30}|".format(f"✨ {module.name} Started! ✨"))
             print("|" + "_" * 32 + "|")
-
             module.start()
+        
+        else:
+            print ('\nGoodbye!\n')
+            break
+
+
+        
 
             # You can also print the result of the module if it returns one.
             # result = module.start()
