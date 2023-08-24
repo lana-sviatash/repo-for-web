@@ -12,28 +12,17 @@ class ApplicationModuleFactory(ABC):
 
 class AddressBookFactory(ApplicationModuleFactory):
     def create_module(self):
-        addressbook_starter()
-        # return create_addressbook()
-        return menu()
+        return addressbook_starter()
 
 
 class NotesFactory(ApplicationModuleFactory):
     def create_module(self):
-        notes_starter()
-        # return create_notes()
-        return menu()
+        return notes_starter()
 
 
 class SorterFactory(ApplicationModuleFactory):
     def create_module(self):
-        sorter_starter()
-        # return create_sorter()
-        return menu()
-
-
-# class Exit(ApplicationModuleFactory):
-#     def create_module(self):
-#         return
+        return sorter_starter()
 
 
 def menu():
@@ -60,17 +49,16 @@ def menu():
         user_input = input("|>>> ")
         print('|'+'_'*32 + '|')
 
-        if user_input in factories:
-            factory = factories[user_input]
-            module = factory.create_module()
-            # print("_" * 34)
-            # print("|{:^30}|".format(f"✨ {module.name} Started! ✨"))
-            # print("|" + "_" * 32 + "|")
-            module.start()
-
-        elif user_input == '0' or user_input.lower() == "exit":
+        if user_input == '0' or user_input.lower() == "exit":
             print('\nGoodbye!\n')
             break
+        if user_input in factories:
+            factory = factories[user_input]
+            factory.create_module()
+            print("_" * 34)
+            print("|{:^30}|".format(f"✨ Main Menu Started! ✨"))
+            print("|" + "_" * 32 + "|")
+        
         else:
             print("_"*34)
             print("|{:^32}|".format("Wrong number... Try again..."))

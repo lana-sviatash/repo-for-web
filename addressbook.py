@@ -3,6 +3,8 @@ from address_book_classes import Record, Name, Phone, Birthday, Email, Address, 
 from datetime import date, timedelta, datetime
 from helpers import instruction, parser_input, command_handler
 
+
+
 address_book = AddressBook()
 filename = 'address_book'
 
@@ -210,8 +212,8 @@ def addressbook_starter():
                 address_book.save()
             if result:
                 print(result)
-    address_book.save()
-
+    #address_book.save()
+    
 
 if __name__ == "__main__":
     addressbook_starter()
