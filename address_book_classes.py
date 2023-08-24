@@ -13,15 +13,14 @@ class Field(ABC):
     @abstractmethod
     def __getitem__(self):
         pass
+    def __init__(self, value) -> None:
+        self.value = value
 
-    # def __init__(self, value) -> None:
-    #     self.value = value
+    def __str__(self) -> str:
+        return self.value
 
-    # def __str__(self) -> str:
-    #     return self.value
-
-    # def __repr__(self) -> str:
-    #     return str(self)
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class Name(Field):
@@ -179,19 +178,19 @@ class Record:
                 self.phones.extend(phone)
             else:
                 self.phones.append(phone)
-
+    
     def add_birthday(self, birthday: Birthday):
         if not self.birthday:
             self.birthday = birthday
-            return f"birthday {self.birthday} add to contact {self.name}"
-        return f"{self.birthday} allready present in birthday data of contact {self.name}"
-
+            return f"birthday {birthday} added to contact {self.name}"
+        return f"{self.birthday} is already present in the birthday data of contact {self.name}"
+    
     def add_phone(self, phone: Phone):
         if phone.value.strip() not in [p.value.strip() for p in self.phones]:
             self.phones.append(phone)
-            return f"phone {phone} add to contact {self.name}"
-        return f"{phone} present in phones of contact {self.name}"
-
+            return f"phone {phone.value} added to contact {self.name}"
+        return f"{phone.value} is already present in the phones of contact {self.name}"
+    
     def add_email(self, email: Email):
         if email.value in [e.value for e in self.emails]:
             return f"{email} present in emails of contact {self.name}"
@@ -353,8 +352,34 @@ class AddressBook(UserDict):
                 result.append(f"{key}: {', '.join(value)}")
         return '! Do not forget to congratulate !\n' + '_' * 59 + '\n' + '\n'.join(result) + '\n' + '_' * 59
 
+    def _format_record(self, record):
+        name = record.name
+        phones = ", ".join(str(phone) for phone in record.phones)
+        bday = str(record.birthday) if record.birthday else ""
+        emails = ", ".join(str(email) for email in record.emails)
+        address = str(record.address) if record.address else ""
+        note = str(record.note) if record.note else ""
+        return name, phones, bday, emails, address, note
+
+    def __str__(self):
+        console = Console()
+        table = self._create_table()
+        for record in self.data.values():
+            name, phones, bday, emails, address, note = self._format_record(record)
+            table.add_row(name, phones, bday, emails, address, note)
+        console.print(table)
+        return "Success!\n"
+
     def show_all_address_book(self):
         console = Console()
+        table = self._create_table()
+        for record in self.data.values():
+            name, phones, bday, emails, address, note = self._format_record(record)
+            table.add_row(name, phones, bday, emails, address, note)
+        console.print(table)
+        return "Success!\n"
+
+    def _create_table(self):
         table = Table(show_header=True, header_style="bold magenta",
                       width=120, show_lines=True)
         table.add_column("Name", width=40, no_wrap=False)
@@ -363,19 +388,7 @@ class AddressBook(UserDict):
         table.add_column("Emails", width=40, no_wrap=False)
         table.add_column("Address", width=40, no_wrap=False)
         table.add_column("Note", width=40, no_wrap=False)
-
-        for record in self.data.values():
-            name = record.name
-            phones = ", ".join(str(phone) for phone in record.phones)
-            bday = str(record.birthday) if record.birthday else ""
-            emails = ", ".join(str(email) for email in record.emails)
-            address = str(record.address) if record.address else ""
-            note = str(record.note) if record.note else ""
-
-            table.add_row(name, phones, bday, emails, address, note)
-
-        console.print(table)
-        return "Success!\n"
+        return table
 
     def search(self, s: str):
         """Used to search for a specific contact in the address book based on a given search term
@@ -385,24 +398,39 @@ class AddressBook(UserDict):
         s : str
             a string representing the search term
         """
-
-        output = []
         result_dict = AddressBook()
-        for key in self.keys():
-            rec = self[key]
-            phone = '.'.join(phone for phone in rec.phones)
+        for key, record in self.data.items():
+            if any(
+                s in str(value)
+                for value in [
+                    record.name,
+                    record.birthday,
+                    record.address,
+                    record.note,
+                ]
+            ) or any(s in phone for phone in record.phones) or any(
+                s in email for email in record.emails
+            ):
+                result_dict.data[key] = record
 
-            if rec.birthday == "":
-                show_birthday = ""
-            else:
-                show_birthday = datetime.strftime(rec.birthday, '%d/%m/%Y')
-
-            emails = ".".join(email for email in rec.emails)
-            address = rec.address
-            note = rec.note
-
-            if s in str(rec.name) or s in phone or s in show_birthday or s in emails or s in address or s in note:
-                output.append(rec)
-            for item in output:
-                result_dict[item.name] = item
         return result_dict.show_all_address_book()
+        # output = []
+        # result_dict = AddressBook()
+        # for key in self.keys():
+        #     rec = self[key]
+        #     phone = '.'.join(phone for phone in rec.phones)
+
+        #     if rec.birthday == "":
+        #         show_birthday = ""
+        #     else:
+        #         show_birthday = datetime.strftime(rec.birthday, '%d/%m/%Y')
+
+        #     emails = ".".join(email for email in rec.emails)
+        #     address = rec.address
+        #     note = rec.note
+
+        #     if s in str(rec.name) or s in phone or s in show_birthday or s in emails or s in address or s in note:
+        #         output.append(rec)
+        #     for item in output:
+        #         result_dict[item.name] = item
+        # return result_dict.show_all_address_book()
